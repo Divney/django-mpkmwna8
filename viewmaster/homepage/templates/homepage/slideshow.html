@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViewMaster</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #000;
+            color: #eee;
+            font-family: system-ui, sans-serif;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+        header a { color: #93c5fd; text-decoration: none; font-size: 0.875rem; }
+        main {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem 1rem;
+        }
+        #slide {
+            max-width: 100%;
+            max-height: calc(100vh - 5rem);
+            object-fit: contain;
+        }
+        .empty {
+            text-align: center;
+            color: #888;
+            max-width: 24rem;
+            line-height: 1.5;
+        }
+        .controls {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: #222;
+            color: #eee;
+            cursor: pointer;
+        }
+        button:hover { background: #333; }
+        #counter { font-size: 0.875rem; color: #888; min-width: 4rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <header>
+        <span>ViewMaster</span>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" style="background:none;border:none;color:#93c5fd;cursor:pointer;padding:0;font-size:0.875rem;">Sign out</button>
+        </form>
+    </header>
+    <main>
+        {% if image_urls %}
+            <img id="slide" src="" alt="Slideshow">
+        {% else %}
+            <p class="empty">No images yet. Add files to <code>viewmaster/slideshow_images/</code> and refresh.</p>
+        {% endif %}
+    </main>
+    {% if image_urls %}
+    <div class="controls">
+        <button type="button" id="prev">Previous</button>
+        <span id="counter"></span>
+        <button type="button" id="next">Next</button>
+    </div>
+    {{ image_urls|json_script:"slideshow-images" }}
+    <script>
+        const images = JSON.parse(document.getElementById('slideshow-images').textContent);
+        let index = 0;
+        const slide = document.getElementById('slide');
+        const counter = document.getElementById('counter');
+
+        function show(i) {
+            index = (i + images.length) % images.length;
+            slide.src = images[index];
+            counter.textContent = `${index + 1} / ${images.length}`;
+        }
+
+        document.getElementById('prev').addEventListener('click', () => show(index - 1));
+        document.getElementById('next').addEventListener('click', () => show(index + 1));
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') show(index - 1);
+            if (e.key === 'ArrowRight') show(index + 1);
+        });
+        show(0);
+    </script>
+    {% endif %}
+</body>
+</html>

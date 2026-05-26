@@ -1,22 +1,24 @@
 databases:
-  - name: mysitedb
+  - name: viewmaster-db
     plan: free
-    databaseName: mysite
-    user: mysite
+    databaseName: viewmaster
+    user: viewmaster
 
 services:
   - type: web
     plan: free
-    name: mysite
+    name: viewmaster
     runtime: python
-    buildCommand: "./build.sh"
-    startCommand: "python -m gunicorn mysite.asgi:application -k uvicorn.workers.UvicornWorker"
+    buildCommand: './build.sh'
+    startCommand: 'cd viewmaster && python -m gunicorn viewmaster.wsgi:application --bind 0.0.0.0:$PORT'
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: mysitedb
+          name: viewmaster-db
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
+      - key: PYTHON_VERSION
+        value: '3.13.0'
       - key: WEB_CONCURRENCY
         value: 4

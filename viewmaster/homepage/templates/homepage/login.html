@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViewMaster — Sign in</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, sans-serif;
+            background: #111;
+            color: #eee;
+        }
+        form {
+            width: min(100%, 20rem);
+            padding: 2rem;
+            background: #1a1a1a;
+            border-radius: 8px;
+        }
+        h1 { margin: 0 0 1.5rem; font-size: 1.25rem; font-weight: 600; }
+        label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; color: #aaa; }
+        input {
+            width: 100%;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: #222;
+            color: #eee;
+        }
+        button {
+            width: 100%;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 4px;
+            background: #3b82f6;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        button:hover { background: #2563eb; }
+        .error { color: #f87171; font-size: 0.875rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <h1>ViewMaster</h1>
+        {% if form.errors %}
+            <p class="error">Invalid username or password.</p>
+        {% endif %}
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" required autofocus>
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" required>
+        <button type="submit">Sign in</button>
+    </form>
+</body>
+</html>

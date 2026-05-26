@@ -1,16 +1,51 @@
-# Deploy a Django App on Render
+# ViewMaster
 
-This is a sample [Django](https://www.djangoproject.com/) app created using Render's [Quick Start Guide](https://docs.render.com/deploy-django#new-django-app) and set up to work with PostgreSQL on Render.
+Django slideshow app: log in, then browse images from `viewmaster/slideshow_images/`.
 
-The sample app is deployed at https://django.onrender.com.
+## Local development
 
+Requires Python 3.13+ and [uv](https://docs.astral.sh/uv/) (or use `pip` with `requirements.txt`).
 
-## Deployment on Render
+```bash
+cd viewmaster-django
+uv sync
 
-Fork the repo and use the button below to deploy this app with one click.
+# Optional: point at Postgres instead of the default local URL in settings.py
+# export DATABASE_URL='postgresql://postgres:postgres@localhost:5432/viewmaster'
 
-<a href="https://render.com/deploy" referrerpolicy="no-referrer-when-downgrade" rel="nofollow">
-  <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" />
-</a>
+cd viewmaster
+uv run python manage.py migrate
+uv run python manage.py createsuperuser
+```
 
-To deploy manually, see the guide at https://docs.render.com/deploy-django.
+Add images under `viewmaster/slideshow_images/` (`.jpg`, `.png`, `.gif`, `.webp`).
+
+Run the server:
+
+```bash
+./run.sh
+```
+
+Open http://127.0.0.1:8000/ — you will be redirected to login, then the slideshow.
+
+## Deploy on Render
+
+This repo includes a [Render Blueprint](https://render.com/docs/infrastructure-as-code) (`render.yaml`) that creates a web service and PostgreSQL database. `DATABASE_URL` is wired automatically.
+
+1. Push this directory as its own Git repo (so `render.yaml` is at the repo root), or set **Root Directory** to `viewmaster-django` if it lives in a monorepo.
+2. In the [Render Dashboard](https://dashboard.render.com) → **Blueprints** → **New Blueprint Instance** → connect the repo → **Apply**.
+3. After the first deploy succeeds, open the web service **Shell** and create an admin user:
+
+   ```bash
+   cd viewmaster && python manage.py createsuperuser
+   ```
+
+4. Upload slideshow images to `viewmaster/slideshow_images/` on the instance (or add persistent storage later). Images are not in git by default (see `.gitignore`).
+
+Manual setup (without Blueprint) is described in [Deploy a Django App on Render](https://render.com/docs/deploy-django). Use:
+
+- **Build command:** `./build.sh`
+- **Start command:** `cd viewmaster && python -m gunicorn viewmaster.wsgi:application --bind 0.0.0.0:$PORT`
+- **Environment:** `DATABASE_URL` (internal Postgres URL), `SECRET_KEY` (generate), optional `WEB_CONCURRENCY=4`
+
+On Render, `DEBUG` is off, static files are served via WhiteNoise, and migrations run during each deploy in `build.sh`.
