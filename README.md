@@ -7,13 +7,11 @@ Django slideshow app: log in, then browse images from `viewmaster/slideshow_imag
 Requires Python 3.13+ and [uv](https://docs.astral.sh/uv/) (or use `pip` with `requirements.txt`).
 
 ```bash
-cd viewmaster-django
 uv sync
 
 # Optional: point at Postgres instead of the default local URL in settings.py
 # export DATABASE_URL='postgresql://postgres:postgres@localhost:5432/viewmaster'
 
-cd viewmaster
 uv run python manage.py migrate
 uv run python manage.py createsuperuser
 ```
