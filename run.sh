@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd "$(dirname "$0")/viewmaster"
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+cd "$ROOT"
 
 uv run python manage.py migrate --noinput
 
 echo "Starting ViewMaster at http://127.0.0.1:8000/"
-echo "Create a login with: cd viewmaster && uv run python manage.py createsuperuser"
-uv run gunicorn viewmaster.wsgi:application --bind 127.0.0.1:8000
+echo "Create a login with: uv run python manage.py createsuperuser"
+uv run python -m gunicorn viewmaster.wsgi:application --chdir viewmaster --bind 127.0.0.1:8000
