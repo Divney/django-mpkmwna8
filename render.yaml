@@ -26,7 +26,7 @@ services:
         sync: false
       - key: AWS_S3_REGION_NAME
         sync: false
-      - key: AWS_S3_SLIDESHOW_PREFIX
+      - key: AWS_S3_VIDEO_KEY_PREFIX
         sync: false
       - key: AWS_ACCESS_KEY_ID
         sync: false

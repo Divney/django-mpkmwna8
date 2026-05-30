@@ -1,115 +1,31 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>ViewMaster</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: #000;
-            color: #eee;
-            font-family: system-ui, sans-serif;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: rgba(0, 0, 0, 0.6);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 10;
-        }
-        header a { color: #93c5fd; text-decoration: none; font-size: 0.875rem; }
-        main {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem 1rem 1rem;
-        }
-        #slide {
-            max-width: 100%;
-            max-height: calc(100vh - 5rem);
-            object-fit: contain;
-            background: #000;
-        }
-        .empty {
-            text-align: center;
-            color: #888;
-            max-width: 24rem;
-            line-height: 1.5;
-        }
-        .controls {
-            position: fixed;
-            bottom: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        button {
-            padding: 0.5rem 1rem;
-            border: 1px solid #444;
-            border-radius: 4px;
-            background: #222;
-            color: #eee;
-            cursor: pointer;
-        }
-        button:hover { background: #333; }
-        #counter { font-size: 0.875rem; color: #888; min-width: 4rem; text-align: center; }
-    </style>
+    <link rel="stylesheet" href="{% static 'homepage/viewer.css' %}">
 </head>
 <body>
-    <header>
-        <span>ViewMaster</span>
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" style="background:none;border:none;color:#93c5fd;cursor:pointer;padding:0;font-size:0.875rem;">Sign out</button>
-        </form>
-    </header>
-    <main>
-        {% if video_urls %}
-            <video id="slide" loop muted playsinline></video>
-        {% else %}
-            <p class="empty">No videos yet. Add <code>.mp4</code> files to local <code>viewmaster/slideshow_videos/</code> or upload to your S3 prefix, then refresh.</p>
-        {% endif %}
-    </main>
-    {% if video_urls %}
-    <div class="controls">
-        <button type="button" id="prev">Previous</button>
-        <span id="counter"></span>
-        <button type="button" id="next">Next</button>
-    </div>
-    {{ video_urls|json_script:"slideshow-videos" }}
-    <script>
-        const videos = JSON.parse(document.getElementById('slideshow-videos').textContent);
-        let index = 0;
-        const slide = document.getElementById('slide');
-        const counter = document.getElementById('counter');
-
-        function show(i) {
-            index = (i + videos.length) % videos.length;
-            slide.src = videos[index];
-            slide.load();
-            slide.play().catch(() => {});
-            counter.textContent = `${index + 1} / ${videos.length}`;
-        }
-
-        document.getElementById('prev').addEventListener('click', () => show(index - 1));
-        document.getElementById('next').addEventListener('click', () => show(index + 1));
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') show(index - 1);
-            if (e.key === 'ArrowRight') show(index + 1);
-        });
-        show(0);
-    </script>
+    {% if has_videos %}
+    <div id="video-container"></div>
+    <button type="button" id="fullscreen-button" aria-label="Toggle fullscreen"></button>
+    <div id="current-index" style="display: none;"></div>
+    <div id="favorite-star" role="button" tabindex="0" aria-label="Toggle favorite">★</div>
+    <form id="sign-out-form" method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Sign out</button>
+    </form>
+    {{ viewer_config|json_script:"viewmaster-config" }}
+    <script src="{% static 'homepage/viewer.js' %}"></script>
+    {% else %}
+    <p class="empty-state">
+        No videos in the catalog yet.<br>
+        Production: run <code>python manage.py import_catalog</code> and upload to S3.<br>
+        Local: add <code>.mp4</code> files to <code>viewmaster/slideshow_videos/</code> and refresh.
+    </p>
     {% endif %}
 </body>
 </html>

@@ -1,0 +1,178 @@
+body {
+    background-color: black;
+    margin: 0;
+    overflow: hidden;
+}
+
+#video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+#fullscreen-button {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    cursor: pointer;
+    z-index: 1000;
+    display: block;
+    border: none;
+    background-color: transparent;
+}
+
+#current-index {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    color: white;
+    font-size: 24px;
+    z-index: 1001;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#favorite-star {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    font-size: 36px;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    z-index: 10000001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#favorite-star:hover {
+    color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+}
+
+#favorite-star.favorited {
+    color: rgba(255, 215, 0, 0.9);
+}
+
+#favorite-star.favorited:hover {
+    color: rgba(255, 215, 0, 1);
+}
+
+#sign-out-form {
+    position: fixed;
+    top: 10px;
+    right: 70px;
+    z-index: 10000001;
+    margin: 0;
+}
+
+#sign-out-form button {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#sign-out-form button:hover {
+    color: rgba(255, 255, 255, 0.75);
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+.grid-button {
+    font-size: 2rem;
+    touch-action: manipulation;
+}
+
+@media (max-width: 768px), (max-height: 768px) and (orientation: landscape) {
+    .grid-button {
+        font-size: 3rem;
+    }
+}
+
+.empty-state {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-family: system-ui, sans-serif;
+    text-align: center;
+    padding: 2rem;
+    line-height: 1.5;
+}
+
+#similar-layout {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    background: #000;
+    z-index: 2;
+}
+
+#similar-parent {
+    flex: 1;
+    min-height: 0;
+}
+
+#similar-children {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 2px;
+}
+
+.similar-tile {
+    position: relative;
+    background: #000;
+    overflow: hidden;
+}
+
+.similar-tile video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.similar-child {
+    cursor: pointer;
+}
+
+.similar-parent {
+    cursor: pointer;
+}
+
+body.jump-similar-active #video-container,
+body.jump-similar-active #fullscreen-button,
+body.jump-similar-active #favorite-star,
+body.jump-similar-active #current-index,
+body.jump-similar-active #grid-container {
+    display: none !important;
+}
+
+body.jump-similar-active #sign-out-form {
+    right: 10px;
+}

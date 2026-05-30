@@ -1,6 +1,6 @@
 # ViewMaster Django Reimplementation Plan
 
-**Status:** Approved decisions recorded — **no code changes until you say “go ahead”.**
+**Status:** Implemented (see codebase). This document remains the design reference.
 
 **Goal:** Port all user-facing features from the static S3-hosted app (`/Users/dsaunder/ViewMasterApp`) into the Django app (`viewmaster-django`), while **keeping the existing Django login page** and **S3-backed video access**. Replace browser-only state (especially favorites) with **Django-native, database-backed** behavior.
 
@@ -283,6 +283,6 @@ Favorite
 
 ---
 
-## 8. Next step
+## 8. Implementation complete
 
-Reply **“go ahead”** when you want implementation to begin. Until then, no application code changes.
+Built per decisions above. Run `import_catalog` on deploy; use `slideshow_videos/` for offline local dev without S3.
