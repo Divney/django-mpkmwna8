@@ -10,7 +10,7 @@ services:
     name: viewmaster
     runtime: python
     buildCommand: './build.sh'
-    startCommand: 'cd viewmaster && python -m gunicorn viewmaster.wsgi:application --bind 0.0.0.0:$PORT'
+    startCommand: 'python -m gunicorn viewmaster.wsgi:application --chdir viewmaster --bind 0.0.0.0:$PORT'
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -22,3 +22,13 @@ services:
         value: '3.13.0'
       - key: WEB_CONCURRENCY
         value: 4
+      - key: AWS_STORAGE_BUCKET_NAME
+        sync: false
+      - key: AWS_S3_REGION_NAME
+        sync: false
+      - key: AWS_S3_SLIDESHOW_PREFIX
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false

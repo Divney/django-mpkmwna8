@@ -37,6 +37,7 @@
             max-width: 100%;
             max-height: calc(100vh - 5rem);
             object-fit: contain;
+            background: #000;
         }
         .empty {
             text-align: center;
@@ -74,29 +75,31 @@
         </form>
     </header>
     <main>
-        {% if image_urls %}
-            <img id="slide" src="" alt="Slideshow">
+        {% if video_urls %}
+            <video id="slide" loop muted playsinline></video>
         {% else %}
-            <p class="empty">No images yet. Add files to <code>viewmaster/slideshow_images/</code> and refresh.</p>
+            <p class="empty">No videos yet. Add <code>.mp4</code> files to local <code>viewmaster/slideshow_videos/</code> or upload to your S3 prefix, then refresh.</p>
         {% endif %}
     </main>
-    {% if image_urls %}
+    {% if video_urls %}
     <div class="controls">
         <button type="button" id="prev">Previous</button>
         <span id="counter"></span>
         <button type="button" id="next">Next</button>
     </div>
-    {{ image_urls|json_script:"slideshow-images" }}
+    {{ video_urls|json_script:"slideshow-videos" }}
     <script>
-        const images = JSON.parse(document.getElementById('slideshow-images').textContent);
+        const videos = JSON.parse(document.getElementById('slideshow-videos').textContent);
         let index = 0;
         const slide = document.getElementById('slide');
         const counter = document.getElementById('counter');
 
         function show(i) {
-            index = (i + images.length) % images.length;
-            slide.src = images[index];
-            counter.textContent = `${index + 1} / ${images.length}`;
+            index = (i + videos.length) % videos.length;
+            slide.src = videos[index];
+            slide.load();
+            slide.play().catch(() => {});
+            counter.textContent = `${index + 1} / ${videos.length}`;
         }
 
         document.getElementById('prev').addEventListener('click', () => show(index - 1));

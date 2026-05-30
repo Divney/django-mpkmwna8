@@ -17,6 +17,24 @@ import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+REPO_ROOT = BASE_DIR.parent
+
+
+def _load_dotenv():
+    """Load repo-root .env for local dev; Render injects env vars directly."""
+    if 'RENDER' in os.environ:
+        return
+    env_file = REPO_ROOT / '.env'
+    if not env_file.is_file():
+        return
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        return
+    load_dotenv(env_file)
+
+
+_load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
@@ -89,8 +107,15 @@ DATABASES = {
     )
 }
 
-SLIDESHOW_IMAGES_DIR = BASE_DIR / 'slideshow_images'
-SLIDESHOW_IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+SLIDESHOW_VIDEOS_DIR = BASE_DIR / 'slideshow_videos'
+SLIDESHOW_VIDEO_EXTENSIONS = {'.mp4'}
+
+# Slideshow storage: local directory by default; set AWS_STORAGE_BUCKET_NAME for S3.
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', '')
+AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME', 'us-east-1')
+AWS_S3_SLIDESHOW_PREFIX = os.environ.get('AWS_S3_SLIDESHOW_PREFIX', 'slideshow/')
+AWS_S3_PRESIGNED_URL_EXPIRY = int(os.environ.get('AWS_S3_PRESIGNED_URL_EXPIRY', '3600'))
+SLIDESHOW_USE_S3 = bool(AWS_STORAGE_BUCKET_NAME)
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'slideshow'
@@ -133,7 +158,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/slideshow/'
-MEDIA_ROOT = SLIDESHOW_IMAGES_DIR
+MEDIA_ROOT = SLIDESHOW_VIDEOS_DIR
 
 if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
